@@ -22,6 +22,12 @@ Design a Lift simulator system with some properties and constraints.
 * Free software: BSD license
 * Documentation: https://elevatorproblem.readthedocs.io.
 
+Assumption
+----------
+
+1. Takes 1 sec to travel 1 floor
+2. Open and close time is 1 sec.
+
 
 Features
 --------
