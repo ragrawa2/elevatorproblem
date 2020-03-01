@@ -6,6 +6,7 @@ import time
 import threading
 import numpy as np
 from enum import Enum
+import logging
 
 
 class Direction(Enum):
@@ -42,7 +43,6 @@ class Elevator(threading.Thread):
         else:
             self.downStops.add(req.floor)
 
-
     def moveElevator(self, floor, directionOfRequests):
         """
         :param floor:
@@ -51,7 +51,7 @@ class Elevator(threading.Thread):
         """
         self.location = floor
         self.set_direction(directionOfRequests)
-        print("Elevator ", self.num, " is moving to floor : ", floor, " to process all direction=",
+        logging.info("Elevator ", self.num, " is moving to floor : ", floor, " to process all direction=",
               directionOfRequests)
         time.sleep(2)
 
@@ -64,15 +64,15 @@ class Elevator(threading.Thread):
             else:
                 self.processNoneReq()
 
-            print("Elevator ", self.num, " current position : ", self.get_position())
+            logging.info("Elevator ", self.num, " current position : ", self.get_position())
             time.sleep(4)
             # if len(self.upStops) != 0 or len(self.downStops) != 0:
             #     req = self.
 
     def processUPReq(self):
-        print("UP UP Elevator ", self.num, " current position : ", self.get_position())
-        print("UP UP Elevator ", self.num, " current position : ", self.get_position())
-        print(self.upStops)
+        logging.info("UP UP Elevator ", self.num, " current position : ", self.get_position())
+        logging.info("UP UP Elevator ", self.num, " current position : ", self.get_position())
+        logging.info(self.upStops)
         floorsReachableWithDirection = [x for x in self.upStops if x >= self.location]
         if len(floorsReachableWithDirection) == 0:
             self.direction = Direction.NONE
@@ -81,12 +81,12 @@ class Elevator(threading.Thread):
             if target == self.location:
                 with self.lock:
                     self.upStops.remove(target)
-                    print("removing ", target, " from Elevator ", self.num)
-                    # newStop = self.addUserInput(Direction.UP)
-                    # if newStop is not None:
-                    #     self.upStops.add(newStop)
-                    print("within our lock state")
-                    print("Sleeping for 5")
+                    logging.info("removing ", target, " from Elevator ", self.num)
+                    newStop = self.addUserFloorReqFromInsideElevator(self.validFloors, self.location, Direction.UP)
+                    if newStop is not None:
+                        self.upStops.add(newStop)
+                    logging.info("within our lock state")
+                    logging.info("Sleeping for 5")
                     time.sleep(5)
             else:
                 self.moveElevator(target, Direction.UP)
@@ -101,19 +101,20 @@ class Elevator(threading.Thread):
             if target == self.location:
                 with self.lock:
                     self.downStops.remove(target)
-                    print("removing ", target, " from Elevator ", self.num)
-                    # newStop = self.addUserInput(Direction.DOWN)
-                    # if newStop is not None:
-                    #     self.downStops.add(newStop)
+                    logging.info("removing ", target, " from Elevator ", self.num)
+                    newStop = self.addUserFloorReqFromInsideElevator(self.validFloors, self.location, Direction.DOWN)
+                    if newStop is not None:
+                        self.downStops.add(newStop)
 
             else:
                 self.moveElevator(target, Direction.DOWN)
 
-    def addUserInput(self, whichWay):
+    @staticmethod
+    def addUserFloorReqFromInsideElevator(validFloors, location, whichWay):
         if whichWay == Direction.DOWN:
-            chooseFrom = [x for x in self.validFloors if x < self.location]
+            chooseFrom = [x for x in validFloors if x < location]
         else:
-            chooseFrom = [x for x in self.validFloors if x > self.location]
+            chooseFrom = [x for x in validFloors if x > location]
 
         if len(chooseFrom) == 0:
             return None
@@ -151,14 +152,14 @@ class ElevatorScheduler(Subscriber):
         for i in range(numElevators):
             myLock = threading.Lock()
             self.locks.append(myLock)
-            print(i)
-            print(list(np.arange(minFloor, maxFloor + 1)))
+            logging.info(i)
+            logging.info(list(np.arange(minFloor, maxFloor + 1)))
             self.elevators.append(Elevator(i, validFloors=list(np.arange(minFloor, maxFloor + 1)), lock=myLock))
             self.elevators[i].start()
 
     def update(self, message):
         self.numberOfRequestForHashing = self.numberOfRequestForHashing + 1
-        print('{} got message "{}"'.format(self.name, str(message)))
+        logging.info('{} got message "{}"'.format(self.name, str(message)))
         index = self.numberOfRequestForHashing % self.numElevators
         if message.direction == Direction.UP:
             with self.locks[index]:
@@ -188,9 +189,9 @@ class RequestGenerator(Publisher):
     def generateRequest(self):
         # self.register("ravi_scheduler")
         floor = random.randint(-2, 10)
-        print(floor, " -- is the floor, sleep 1 sec")
+        logging.info(floor, " -- is the floor, sleep 1 sec")
 
-        #time.sleep(2)
+        # time.sleep(2)
         self.dispatch(RequestCall(datetime.datetime.now(), floor, Direction.DOWN))
 
 
