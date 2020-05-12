@@ -14,7 +14,7 @@ class RequestCall(object):
         self.to_floor = to_floor
 
     def __str__(self):
-        s = "Creaated time : " + self.time_created.strftime(
+        s = "Created time : " + self.time_created.strftime(
             "%m/%d/%Y, %H:%M:%S") + ". From Floor : " + str(self.from_floor) + ". Direction :" + str(self.direction)
         print("RequestCall is : ", s)
         return s
