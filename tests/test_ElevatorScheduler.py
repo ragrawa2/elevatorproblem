@@ -1,4 +1,4 @@
-from elevatorproblem.classes.ElevatorScheduler import *
+from elevatorproblem.PubSubApproach.ElevatorScheduler import *
 
 
 def test_addUserFloorReqFromInsideElevator_1():

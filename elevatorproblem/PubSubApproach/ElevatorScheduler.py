@@ -1,5 +1,5 @@
-from elevatorproblem.classes.PublisherObserver import Subscriber, Publisher
-from elevatorproblem.classes.RequestCall import RequestCall
+from elevatorproblem.PubSubApproach.PublisherObserver import Subscriber, Publisher
+from elevatorproblem.PubSubApproach.RequestCall import RequestCall
 import random
 import datetime
 import time

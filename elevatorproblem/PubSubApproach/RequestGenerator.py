@@ -1,7 +1,8 @@
-from elevatorproblem.classes.PublisherObserver import Publisher
-from elevatorproblem.classes.RequestCall import RequestCall
+from elevatorproblem.PubSubApproach.PublisherObserver import Publisher
+from elevatorproblem.PubSubApproach.RequestCall import RequestCall
 import random
 import time
+
 
 class RequestGenertor(Publisher):
     """
@@ -13,10 +14,11 @@ class RequestGenertor(Publisher):
 
     def generateRequest(self):
         self.register("ravi_scheduler")
-        timeout = random.randint(1,10)
+        timeout = random.randint(1, 10)
         print(timeout, " -- is the timeout")
         time.sleep(timeout)
         self.dispatch("go to number 7")
+
 
 def main():
     b = RequestGenertor()
@@ -24,5 +26,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
